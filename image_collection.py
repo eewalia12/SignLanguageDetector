@@ -9,7 +9,7 @@ if not os.path.exists(DATA_DIR):
 # labels for each directory/set of images
 alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 # specify number of images for each letter
-num_images = 10
+num_images = 20
 
 # starts image capture with the default camera (0)
 capture = cv2.VideoCapture(0)
