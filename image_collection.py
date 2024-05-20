@@ -8,6 +8,7 @@ if not os.path.exists(DATA_DIR):
 
 # labels for each directory/set of images
 alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
 # specify number of images for each letter
 num_images = 20
 
