@@ -9,18 +9,20 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import cross_val_score
 
 
-# Load the dataset
-file_path = './Data/output.csv'
-data = pd.read_csv(file_path)
-file_path2 = './Data/outputNew.csv'
-data2 = pd.read_csv(file_path2)
-file_path3 = './Data/outputNewSam.csv'
-data3 = pd.read_csv(file_path3)
-bigData = pd.concat([data, data2, data3], axis=0)
+# Load the dataset ** MAKE SURE TO MODIFY FILE PATHS
+# file_path = './Data/output.csv'
+# data = pd.read_csv(file_path)
+# file_path2 = './Data/outputNew.csv'
+# data2 = pd.read_csv(file_path2)
+# file_path3 = './Data/outputNewSam.csv'
+# data3 = pd.read_csv(file_path3)
+# bigData = pd.concat([data, data2, data3], axis=0)
+
+data_path = './Data/bigDataWithHeaders.csv'
 
 # Separate features and labels
-X = bigData.drop(columns=['Label'])
-y = bigData['Label']
+X = data_path.drop(columns=['Label'])
+y = data_path['Label']
 
 # Split the dataset into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=True, random_state=5)
