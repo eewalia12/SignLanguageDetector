@@ -33,8 +33,8 @@ X_test = scaler.transform(X_test)
 # Initialize and train the Logistic Regression model
 # model = DecisionTreeClassifier(random_state=20)
 # model = LogisticRegression(random_state=20, max_iter=100)
-# model = Perceptron(max_iter=1000, tol=1e-3)
-model = KNeighborsClassifier(n_neighbors=5)
+model = Perceptron(max_iter=1000, tol=1e-3)
+# model = KNeighborsClassifier(n_neighbors=5)
 
 cv_scores = cross_val_score(model, X_train, y_train, cv=10)
 
@@ -47,9 +47,13 @@ y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 report = classification_report(y_test, y_pred)
 
-print(f"Accuracy: {accuracy}")
-print("Classification Report:")
-print(report)
+# print(f"Accuracy: {accuracy}")
+# print("Classification Report:")
+# print(report)
+
+print("Cross-validation scores:", cv_scores)
+print("Mean cross-validation score:", cv_scores.mean())
+print("Standard deviation of cross-validation scores:", cv_scores.std())
 
 # plt.figure(figsize=(20,10), dpi=300)
 # plot_tree(model, feature_names=X.columns, class_names=model.classes_, filled=True)
