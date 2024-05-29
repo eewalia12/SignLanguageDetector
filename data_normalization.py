@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-df = pd.read_csv('./Data/bigDataWithHeaders.csv')
+# df = pd.read_csv('./updatedWithHeaders.csv')
 
 def normalize_landmarks(df):
     landmarks = df.iloc[:, 1:].values.reshape(-1, 21, 3)
@@ -17,9 +17,14 @@ def normalize_landmarks_array(landmarks):
     wrist_coords = landmarks[:, 0, :].reshape(-1, 1, 3)  # Extract wrist coordinates
     normalized_landmarks = landmarks - wrist_coords  # Normalize landmarks by subtracting wrist coordinates
 
+    columns=[f'landmark_{i}_{axis}' for i in range(21) for axis in ['x', 'y', 'z']]
+    
     max_dist = np.linalg.norm(normalized_landmarks, axis=2).max(axis=1).reshape(-1, 1, 1)  # Compute max distance
     normalized_landmarks /= max_dist  # Scale coordinates
-    return normalized_landmarks.reshape(-1, 63)  # Flatten back to (n_samples, 63)
+    normalized_landmarks = normalized_landmarks.reshape(-1, 63)
+
+    normalized_landmarks_df = pd.DataFrame(normalized_landmarks, columns=columns)
+    return normalized_landmarks_df # Flatten back to (n_samples, 63)
 
 # normalized_landmarks = normalize_landmarks(df)
 # df_normalized = pd.DataFrame(normalized_landmarks, columns=[f'landmark_{i}_{axis}' for i in range(21) for axis in ['x', 'y', 'z']])

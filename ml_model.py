@@ -1,62 +1,39 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
-from sklearn.linear_model import LogisticRegression, Perceptron
-from sklearn.neighbors import KNeighborsClassifier
-import matplotlib.pyplot as plt
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import train_test_split, cross_val_predict, StratifiedKFold
+from data_normalization import normalize_landmarks
 
 
 # Load the dataset ** MAKE SURE TO MODIFY FILE PATHS
-# file_path = './Data/output.csv'
-# data = pd.read_csv(file_path)
-# file_path2 = './Data/outputNew.csv'
-# data2 = pd.read_csv(file_path2)
-# file_path3 = './Data/outputNewSam.csv'
-# data3 = pd.read_csv(file_path3)
-# bigData = pd.concat([data, data2, data3], axis=0)
+file_path = './Data/output.csv'
+data = pd.read_csv(file_path)
+file_path2 = './Data/outputNew.csv'
+data2 = pd.read_csv(file_path2)
+file_path3 = './Data/outputNewSam.csv'
+data3 = pd.read_csv(file_path3)
+file_path4 = './outputMeora.csv'
+data4 = pd.read_csv(file_path4)
+bigData = pd.concat([data3, data2, data4, data], axis=0)
+bigData = bigData.reset_index(drop=True)
 
-data_path = './Data/bigDataWithHeaders.csv'
+# data_path = './Data/bigDataWithHeaders.csv'
+# data = pd.read_csv(data_path)
+# # Separate features and labels
+# X = data4.drop(columns=['Label'])
+# y = data4['Label']
 
-# Separate features and labels
-X = data_path.drop(columns=['Label'])
-y = data_path['Label']
+normalized_landmarks = normalize_landmarks(bigData)
+df_normalized = pd.DataFrame(normalized_landmarks, columns=[f'landmark_{i}_{axis}' for i in range(21) for axis in ['x', 'y', 'z']])
+df_normalized['label'] = bigData['Label']
 
-# Split the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=True, random_state=5)
+X = df_normalized.iloc[:, :-1].values
+y = df_normalized['label'].values
 
-# Standardize the data
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
+model = RandomForestClassifier(n_estimators=50, random_state=42)
 
-# Initialize and train the Logistic Regression model
-# model = DecisionTreeClassifier(random_state=20)
-# model = LogisticRegression(random_state=20, max_iter=100)
-model = Perceptron(max_iter=1000, tol=1e-3)
-# model = KNeighborsClassifier(n_neighbors=5)
+skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
+y_pred = cross_val_predict(model, X, y, cv=skf)
 
-cv_scores = cross_val_score(model, X_train, y_train, cv=10)
-
-model.fit(X_train, y_train)
-
-# Make predictions on the test set
-y_pred = model.predict(X_test)
-
-# Evaluate the model
-accuracy = accuracy_score(y_test, y_pred)
-report = classification_report(y_test, y_pred)
-
-# print(f"Accuracy: {accuracy}")
-# print("Classification Report:")
-# print(report)
-
-print("Cross-validation scores:", cv_scores)
-print("Mean cross-validation score:", cv_scores.mean())
-print("Standard deviation of cross-validation scores:", cv_scores.std())
-
-# plt.figure(figsize=(20,10), dpi=300)
-# plot_tree(model, feature_names=X.columns, class_names=model.classes_, filled=True)
-# plt.show()
+print("Classification Report:")
+print(classification_report(y, y_pred))
