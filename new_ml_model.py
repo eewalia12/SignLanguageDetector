@@ -7,20 +7,14 @@ from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from data_normalization import normalize_landmarks
+import pickle
 
 # Load the dataset ** MAKE SURE TO MODIFY FILE PATHS
 file_path = './updated_normalized_data.csv'
 data = pd.read_csv(file_path)
 
-bigData = pd.concat([data], axis=0)
-bigData = bigData.reset_index(drop=True)
-
-normalized_landmarks = normalize_landmarks(bigData)
-df_normalized = pd.DataFrame(normalized_landmarks, columns=[f'landmark_{i}_{axis}' for i in range(21) for axis in ['x', 'y', 'z']])
-df_normalized['label'] = bigData['Label']
-
-X = df_normalized.iloc[:, :-1].values
-y = df_normalized['label'].values
+X = data.drop(columns=['Label'])
+y = data['Label']
 
 # Scale the data
 scaler = StandardScaler()
@@ -54,4 +48,14 @@ for model in models:
 # Find the best model
 best_model_index = scores.index(max(scores))
 best_model = models[best_model_index]
+
+best_model.fit(X, y)
+
+model_data = {
+    'model': best_model
+}
+
+with open('hand_landmark_model.pkl', 'wb') as file:
+    pickle.dump(model_data, file)
+
 print(f"The best model is: {best_model.__class__.__name__}")
