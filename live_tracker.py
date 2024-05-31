@@ -1,7 +1,7 @@
 import cv2
 import mediapipe as mp
 import numpy as np
-from data_analysis import normalize_landmarks_array
+from data_normalization import normalize_landmarks_array
 import pandas as pd
 import pickle
 
@@ -30,6 +30,7 @@ def main():
                 landmarks = np.array([[lm.x, lm.y, lm.z] for lm in hand_landmark.landmark]).flatten()
                 normalized_landmarks = normalize_landmarks_array(landmarks)
                 prediction = model.predict(normalized_landmarks)
+
                 cv2.putText(frame, f'Label: {prediction[0]}', (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
                 mp_drawing.draw_landmarks(

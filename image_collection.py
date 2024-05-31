@@ -2,12 +2,13 @@ import os
 import cv2
 
 # creates a directory called alphabet_dir in your local dir if it doesn't exist
-DATA_DIR = './alphabet_dir2'
+DATA_DIR = './alphabet_dir_additional'
 if not os.path.exists(DATA_DIR):
     os.makedirs(DATA_DIR)
 
 # labels for each directory/set of images
-alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+alphabet = "ATSEN"
+# alphabet = "Q"
 
 # starts image capture with the default camera (0)
 capture = cv2.VideoCapture(0)

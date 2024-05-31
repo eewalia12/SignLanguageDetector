@@ -11,7 +11,7 @@ def normalize_landmarks(df):
     return normalized_landmarks.reshape(-1, 63)  # Flatten the array back to (n_samples, 63)
 
 # Load your original data
-df = pd.read_csv('./outputAdditional.csv')
+df = pd.read_csv('./finalData.csv')
 
 # Normalize the landmarks
 normalized_data = normalize_landmarks(df)
@@ -24,4 +24,4 @@ normalized_df = pd.DataFrame(normalized_data, columns=columns)
 normalized_df.insert(0, df.columns[0], df.iloc[:, 0])
 
 # Save the normalized data to a new CSV file
-normalized_df.to_csv('normalized_additionaldata.csv', index=False)
+normalized_df.to_csv('normalized_data.csv', index=False)
