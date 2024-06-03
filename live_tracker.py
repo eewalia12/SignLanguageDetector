@@ -4,6 +4,7 @@ import numpy as np
 from data_normalization import normalize_landmarks_array
 import pandas as pd
 import pickle
+from collections import deque
 
 def main():
     with open('hand_landmark_model.pkl', 'rb') as file:
@@ -20,6 +21,8 @@ def main():
     hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
 
     padding = 50  # Padding value in pixels
+    prediction_buffer = deque(maxlen=5)
+    confidence_buffer = deque(maxlen=5)
 
     while True:
         ret, frame = cap.read()
@@ -64,12 +67,23 @@ def main():
                 if isinstance(normalized_landmarks, pd.DataFrame):
                     normalized_landmarks = normalized_landmarks.to_numpy()
                 normalized_landmarks = normalized_landmarks.reshape(1, -1)  # Ensure 2D shape for prediction
-                prediction = model.predict(normalized_landmarks)
-                confidece =  round(model.predict_proba(normalized_landmarks).max(), 3)*100
 
-                # Display the prediction on the cropped frame
-                cv2.putText(cropped_frame, f'Label: {prediction[0]}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
-                cv2.putText(cropped_frame, f'Confidence: {confidece}%', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
+                prediction = model.predict(normalized_landmarks)[0]
+                confidence = round(model.predict_proba(normalized_landmarks).max(), 3) * 100
+
+                # Append the prediction and confidence to the buffers
+                prediction_buffer.append(prediction)
+                confidence_buffer.append(confidence)
+
+                # Calculate the average prediction over the last 5 frames
+                avg_prediction = max(set(prediction_buffer), key=prediction_buffer.count)
+                
+                # Calculate the average confidence over the last 5 frames
+                avg_confidence = sum(confidence_buffer) / len(confidence_buffer)
+                
+                # Display the average prediction and confidence on the cropped frame
+                cv2.putText(cropped_frame, f'Label: {avg_prediction}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+                cv2.putText(cropped_frame, f'Confidence: {avg_confidence:.2f}%', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
 
                 # Draw landmarks on the original frame
                 mp_drawing.draw_landmarks(
@@ -83,7 +97,6 @@ def main():
                 # Draw the bounding box on the original frame
                 cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
 
-        cv2.imshow('Cropped Frame', cropped_frame if 'cropped_frame' in locals() else frame)
         cv2.imshow('Original Frame', frame)
         
         if cv2.waitKey(1) == ord('q'):
@@ -93,4 +106,4 @@ def main():
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    main()  
+    main()
