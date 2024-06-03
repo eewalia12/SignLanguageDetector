@@ -65,11 +65,11 @@ def main():
                     normalized_landmarks = normalized_landmarks.to_numpy()
                 normalized_landmarks = normalized_landmarks.reshape(1, -1)  # Ensure 2D shape for prediction
                 prediction = model.predict(normalized_landmarks)
-                confidence = round(model.predict_proba(normalized_landmarks).max(), 3) * 100
+                confidece =  round(model.predict_proba(normalized_landmarks).max(), 3)*100
 
                 # Display the prediction on the cropped frame
                 cv2.putText(cropped_frame, f'Label: {prediction[0]}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
-                cv2.putText(cropped_frame, f'Confidence: {confidence}%', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
+                cv2.putText(cropped_frame, f'Confidence: {confidece}%', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
 
                 # Draw landmarks on the original frame
                 mp_drawing.draw_landmarks(
@@ -93,4 +93,4 @@ def main():
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    main()
+    main()  
